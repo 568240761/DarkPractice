@@ -1,4 +1,6 @@
 # Dart 学习
+本文记录 Dart 官方中文教程中个人觉得有意思的内容。个人习惯，不喜勿喷。
+
 当前 SDK 版本为2.9.2，Dart 文档可浏览[官方网站](https://dart.cn/guides/language/language-tour)。
 
 在学习 Dart 语言时, 应该牢记以下几点：
@@ -755,3 +757,69 @@ class SingerDancer extends Musician with MusicalPerformer {
 - 可以减少代码重复
 
 ## [库和可见性](https://dart.cn/guides/language/language-tour#libraries-and-visibility)
+
+## [异步支持](https://dart.cn/guides/language/language-tour#asynchrony-support)
+
+Dart 代码库中有大量返回 Future 或 Stream 对象的函数，这些函数都是异步的，它们会在耗时操作（比如I/O）执行完毕前直接返回而不会等待耗时操作执行完毕。
+
+async 和 await 关键字用于实现异步编程，并且让你的代码看起来就像是同步的一样。
+
+### Future
+使用 Future 可通过 async 和 await 或 Future API。
+
+定义异步函数只需在普通方法上加上 async 关键字，将关键字 async 添加到函数并让其返回一个 Future 对象。
+
+注意，函数体不需要使用 Future API。如有必要，Dart 会创建 Future 对象。如果函数没有返回有效值，需要设置其返回类型为 Future<void>。
+
+在带有 async 关键字的异步函数中可以使用 await ，也可以不使用；如果要在函数中使用 await，那么函数就必须使用 async 关键字标识。 
+```dart
+Future checkVersion() async {
+  var version = await lookUpVersion();
+  // 使用 version 继续处理逻辑
+}
+```
+尽管异步函数可以处理耗时操作，但是它并不会等待这些耗时操作完成，异步函数执行时会在其遇到第一个 await 表达式的时候返回一个 Future 对象，然后等待 await 表达式执行完毕后继续执行。
+
+如果在使用 await 时导致编译错误，请确保 await 在一个异步函数中使用。
+
+### Stream
+使用 Stream 可通过 async 和 await for（异步循环）或 Stream API。
+
+异步循环不推荐用在无尽的循环上。例如，通常不应该在 UI 事件监听器上使用 await for 关键字，因为 UI 框架发出的事件流是无穷尽的。
+```dart
+Future main() async {
+  await for (var request in requestServer) {
+      handleRequest(request);
+  }
+}
+```
+表达式 的类型必须是 Stream。执行流程如下：
+
+- 等待直到 Stream 返回一个数据。
+
+- 使用 1 中 Stream 返回的数据执行循环体。
+
+- 重复 1、2 过程直到 Stream 数据返回完毕。
+
+使用 break 和 return 语句可以停止接收 Stream 数据，这样就跳出了循环并取消注册监听 Stream。
+
+如果在实现异步 for 循环时遇到编译时错误，请检查确保 await for 处于异步函数中。
+
+## [生成器](https://dart.cn/guides/language/language-tour#generators)
+当你需要延迟地生成一连串的值时，可以考虑使用生成器函数。
+
+Dart 内置支持两种形式的生成器方法：
+- 同步生成器：返回一个 Iterable 对象。
+- 异步生成器：返回一个 Stream 对象。
+
+## [可调用类](https://dart.cn/guides/language/language-tour#callable-classes)
+通过实现类的 call() 方法，允许使用类似函数调用的方式来使用该类的实例。
+
+## [隔离区](https://dart.cn/guides/language/language-tour#isolates)
+解决多线程带来的并发问题
+
+## [类型定义](https://dart.cn/guides/language/language-tour#typedefs)
+可以说是方法类型别名，目前类型定义只能用在函数类型上，但是将来可能会有变化
+
+## [元数据](https://dart.cn/guides/language/language-tour#metadata)
+就是Java中的注解
